@@ -1,35 +1,39 @@
 #include "HomeController.h"
 
-void HomeController::home(
+void HomeController::health(
     const drogon::HttpRequestPtr&,
-    std::function<void(const drogon::HttpResponsePtr&)>&& callback)
+    std::function<void(
+        const drogon::HttpResponsePtr&)>&& callback)
 {
-    auto db = drogon::app().getDbClient("default");
+    Json::Value result;
 
-    if (!db)
-    {
-        auto response = drogon::HttpResponse::newHttpResponse();
-        response->setStatusCode(drogon::k500InternalServerError);
-        response->setBody("Database client is not available.");
-        callback(response);
-        return;
-    }
+    result["status"] = "UP";
+    result["db"] = "DOWN";
 
     try
     {
-        auto result = db->execSqlSync("SELECT 1");
+        auto db =
+            drogon::app().getDbClient("default");
 
-        auto response = drogon::HttpResponse::newHttpResponse();
-        response->setBody("DeepakMart API + PostgreSQL Connected Successfully!");
-        callback(response);
+        if (db)
+        {
+            db->execSqlSync("SELECT 1");
+            result["db"] = "UP";
+        }
     }
-    catch (const std::exception& e)
+    catch (...)
     {
-        auto response = drogon::HttpResponse::newHttpResponse();
-        response->setStatusCode(drogon::k500InternalServerError);
-        response->setBody(
-            std::string("PostgreSQL Error: ") + e.what()
-        );
-        callback(response);
+        result["db"] = "DOWN";
     }
+
+    auto response =
+        drogon::HttpResponse::newHttpJsonResponse(
+            result
+        );
+
+    response->setStatusCode(
+        drogon::k200OK
+    );
+
+    callback(response);
 }

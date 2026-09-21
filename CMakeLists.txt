@@ -10,15 +10,32 @@ find_package(unofficial-argon2 CONFIG REQUIRED)
 find_package(OpenSSL REQUIRED)
 
 add_executable(deepakmart
+
     src/main.cpp
 
     src/controller/HomeController.cpp
     src/controller/UserController.cpp
+    src/controller/ProductController.cpp
+    src/controller/CartController.cpp
+    src/controller/OrderController.cpp
+    src/controller/ReviewController.cpp
+    src/controller/AdminController.cpp
 
     src/service/UserService.cpp
+    src/service/ProductService.cpp
+    src/service/CartService.cpp
+    src/service/OrderService.cpp
+    src/service/ReviewService.cpp
+    src/service/AdminService.cpp
+
     src/util/PasswordUtil.cpp
 
     src/repository/UserRepository.cpp
+    src/repository/ProductRepository.cpp
+    src/repository/CartRepository.cpp
+    src/repository/OrderRepository.cpp
+    src/repository/ReviewRepository.cpp
+    src/repository/AdminRepository.cpp
 )
 
 target_link_libraries(deepakmart

@@ -1,6 +1,38 @@
+# Build output
 build/
-*.exe
-*.dll
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+build.ninja
+.ninja_deps
+.ninja_log
+
+# Local configuration / secrets
+config.json
+.env
+.env.*
+!.env.example
+
+# IDE
 .vscode/
-test-login.json
-test-register.json
+.idea/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Local uploads
+uploads/*
+!uploads/.gitkeep
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Temporary API test files
+test-*.json
