@@ -13,7 +13,8 @@ RUN apt-get update && \
         unzip \
         tar \
         pkg-config \
-        ca-certificates && \
+        ca-certificates \
+        python3 && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /opt
