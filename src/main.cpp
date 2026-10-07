@@ -20,6 +20,10 @@ std::string getEnv(
 
 int main()
 {
+    // ---------------------------------------------------------
+    // Read environment variables
+    // ---------------------------------------------------------
+
     const std::string dbHost =
         getEnv("DB_HOST");
 
@@ -38,6 +42,10 @@ int main()
     const std::string portString =
         getEnv("PORT", "10000");
 
+    // ---------------------------------------------------------
+    // Validate required database settings
+    // ---------------------------------------------------------
+
     if (dbHost.empty() ||
         dbName.empty() ||
         dbUser.empty() ||
@@ -50,34 +58,89 @@ int main()
         return 1;
     }
 
-    unsigned short dbPort =
+    // ---------------------------------------------------------
+    // Convert ports
+    // ---------------------------------------------------------
+
+    const unsigned short dbPort =
         static_cast<unsigned short>(
             std::stoi(dbPortString));
 
-    unsigned short serverPort =
+    const unsigned short serverPort =
         static_cast<unsigned short>(
             std::stoi(portString));
 
-    drogon::orm::PostgresConfig dbConfig;
+    // ---------------------------------------------------------
+    // Build Drogon configuration dynamically
+    // ---------------------------------------------------------
 
-    dbConfig.host = dbHost;
-    dbConfig.port = dbPort;
-    dbConfig.databaseName = dbName;
-    dbConfig.username = dbUser;
-    dbConfig.password = dbPassword;
-    dbConfig.connectionNumber = 2;
-    dbConfig.name = "default";
-    dbConfig.isFast = false;
-    dbConfig.timeout = 10.0;
+    Json::Value config;
 
+    // ---------------------------------------------------------
+    // PostgreSQL / Neon configuration
+    // ---------------------------------------------------------
 
-    drogon::app()
-        .addDbClient(dbConfig)
-        .addListener(
-            "0.0.0.0",
-            serverPort)
-        .setDocumentRoot("frontend")
-        .run();
+    Json::Value dbClient;
+
+    dbClient["name"] = "default";
+    dbClient["rdbms"] = "postgresql";
+
+    dbClient["host"] = dbHost;
+    dbClient["port"] = dbPort;
+    dbClient["dbname"] = dbName;
+
+    dbClient["user"] = dbUser;
+    dbClient["passwd"] = dbPassword;
+
+    dbClient["is_fast"] = false;
+    dbClient["number_of_connections"] = 2;
+    dbClient["timeout"] = 10.0;
+    dbClient["auto_batch"] = false;
+
+    // Neon PostgreSQL requires SSL.
+    dbClient["connect_options"]["sslmode"] = "require";
+
+    config["db_clients"].append(dbClient);
+
+    // ---------------------------------------------------------
+    // Render HTTP listener
+    // ---------------------------------------------------------
+
+    Json::Value listener;
+
+    listener["address"] = "0.0.0.0";
+    listener["port"] = serverPort;
+    listener["https"] = false;
+
+    config["listeners"].append(listener);
+
+    // ---------------------------------------------------------
+    // Frontend configuration
+    // ---------------------------------------------------------
+
+    config["app"]["document_root"] = "frontend";
+    config["app"]["home_page"] = "index.html";
+
+    // ---------------------------------------------------------
+    // Start Drogon
+    // ---------------------------------------------------------
+
+    try
+    {
+        drogon::app()
+            .loadConfigJson(config)
+            .run();
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr
+            << "ERROR: Failed to start DeepakMart."
+            << std::endl
+            << e.what()
+            << std::endl;
+
+        return 1;
+    }
 
     return 0;
 }
