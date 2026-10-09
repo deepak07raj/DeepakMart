@@ -21,8 +21,14 @@ void HomeController::health(
             result["db"] = "UP";
         }
     }
+    catch (const std::exception& e)
+    {
+        std::cerr << "Health check DB exception: " << e.what() << std::endl;
+        result["db"] = "DOWN";
+    }
     catch (...)
     {
+        std::cerr << "Health check DB unknown exception" << std::endl;
         result["db"] = "DOWN";
     }
 

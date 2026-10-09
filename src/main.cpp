@@ -20,6 +20,9 @@ std::string getEnv(
 
 int main()
 {
+    // Neon PostgreSQL requires SSL for all libpq connections.
+    putenv(const_cast<char*>("PGSSLMODE=require"));
+
     // ---------------------------------------------------------
     // Read environment variables
     // ---------------------------------------------------------
@@ -93,6 +96,7 @@ int main()
     dbClient["passwd"] = dbPassword;
 
     dbClient["is_fast"] = false;
+    dbClient["connection_number"] = 2;
     dbClient["number_of_connections"] = 2;
     dbClient["timeout"] = 10.0;
     dbClient["auto_batch"] = false;

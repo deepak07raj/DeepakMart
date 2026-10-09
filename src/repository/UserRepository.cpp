@@ -6,7 +6,7 @@ UserRepository::UserRepository()
 {
 }
 
-bool UserRepository::createUser(const User& user)
+bool UserRepository::createUser(User& user)
 {
     auto db = drogon::app().getDbClient("default");
 
@@ -17,16 +17,23 @@ bool UserRepository::createUser(const User& user)
 
     try
     {
-        db->execSqlSync(
+        auto result = db->execSqlSync(
             "INSERT INTO users (name, email, password_hash, role) "
-            "VALUES ($1, $2, $3, $4)",
+            "VALUES ($1, $2, $3, $4) "
+            "RETURNING id",
             user.name,
             user.email,
             user.password,
             user.role
         );
 
-        return true;
+        if (!result.empty())
+        {
+            user.id = result[0]["id"].as<long long>();
+            return true;
+        }
+
+        return false;
     }
     catch (const std::exception& e)
     {

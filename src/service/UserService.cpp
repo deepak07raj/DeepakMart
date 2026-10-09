@@ -5,7 +5,7 @@ UserService::UserService()
 {
 }
 
-bool UserService::registerUser(const User& user)
+bool UserService::registerUser(User& user)
 {
     if (user.name.empty() ||
         user.email.empty() ||
@@ -14,12 +14,24 @@ bool UserService::registerUser(const User& user)
         return false;
     }
 
+    if (user.role.empty())
+    {
+        user.role = "BUYER";
+    }
+
     User userToSave = user;
 
     userToSave.password =
         PasswordUtil::hashPassword(user.password);
 
-    return userRepository.createUser(userToSave);
+    bool ok = userRepository.createUser(userToSave);
+    if (ok)
+    {
+        user.id = userToSave.id;
+        user.password = userToSave.password;
+    }
+
+    return ok;
 }
 
 std::optional<User> UserService::loginUser(

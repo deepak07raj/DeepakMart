@@ -3,6 +3,7 @@ FROM ubuntu:24.04
 ENV DEBIAN_FRONTEND=noninteractive
 ENV VCPKG_MAX_CONCURRENCY=1
 ENV CMAKE_BUILD_PARALLEL_LEVEL=1
+ENV PGSSLMODE=require
 
 RUN apt-get update && \
     apt-get install -y \

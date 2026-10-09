@@ -24,14 +24,16 @@ void UserController::registerUser(
     user.name = (*json)["name"].asString();
     user.email = (*json)["email"].asString();
     user.password = (*json)["password"].asString();
-    user.role = "BUYER";
+    user.role = (json->isMember("role") && !(*json)["role"].asString().empty())
+        ? (*json)["role"].asString()
+        : "BUYER";
 
     UserService userService;
 
     if (!userService.registerUser(user))
     {
         Json::Value result;
-        result["error"] = "User registration failed";
+        result["error"] = "User registration failed. Email may already be registered.";
 
         auto response =
             drogon::HttpResponse::newHttpJsonResponse(result);
@@ -43,6 +45,8 @@ void UserController::registerUser(
 
     Json::Value result;
     result["message"] = "User registered successfully";
+    result["id"] = static_cast<Json::Int64>(user.id);
+    result["user_id"] = static_cast<Json::Int64>(user.id);
     result["name"] = user.name;
     result["email"] = user.email;
     result["role"] = user.role;
@@ -97,6 +101,7 @@ void UserController::loginUser(
     Json::Value result;
     result["message"] = "Login successful";
     result["id"] = static_cast<Json::Int64>(user->id);
+    result["user_id"] = static_cast<Json::Int64>(user->id);
     result["name"] = user->name;
     result["email"] = user->email;
     result["role"] = user->role;

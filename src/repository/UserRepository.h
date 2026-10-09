@@ -9,7 +9,7 @@ class UserRepository
 public:
     UserRepository();
 
-    bool createUser(const User& user);
+    bool createUser(User& user);
 
     std::optional<User> findByEmail(const std::string& email);
 };

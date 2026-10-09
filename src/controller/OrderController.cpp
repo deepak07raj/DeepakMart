@@ -236,3 +236,98 @@ void OrderController::getOrderById(
 
     callback(response);
 }
+
+void OrderController::getOrdersBySeller(
+    const drogon::HttpRequestPtr&,
+    std::function<void(
+        const drogon::HttpResponsePtr&)>&& callback,
+    long long sellerId)
+{
+    OrderService orderService;
+
+    auto orders =
+        orderService.getOrdersBySeller(
+            sellerId
+        );
+
+    Json::Value result(
+        Json::arrayValue
+    );
+
+    for (const auto& order : orders)
+    {
+        Json::Value item;
+
+        item["id"] =
+            static_cast<Json::Int64>(
+                order.id
+            );
+
+        item["order_id"] =
+            static_cast<Json::Int64>(
+                order.id
+            );
+
+        item["buyer_id"] =
+            static_cast<Json::Int64>(
+                order.buyerId
+            );
+
+        item["status"] =
+            order.status;
+
+        item["total_amount_cents"] =
+            static_cast<Json::Int64>(
+                order.totalAmountCents
+            );
+
+        auto orderItems =
+            orderService.getOrderItems(
+                order.id
+            );
+
+        Json::Value items(
+            Json::arrayValue
+        );
+
+        for (const auto& oi : orderItems)
+        {
+            Json::Value orderItem;
+
+            orderItem["id"] =
+                static_cast<Json::Int64>(
+                    oi.id
+                );
+
+            orderItem["product_id"] =
+                static_cast<Json::Int64>(
+                    oi.productId
+                );
+
+            orderItem["quantity"] =
+                oi.quantity;
+
+            orderItem["unit_price_cents"] =
+                static_cast<Json::Int64>(
+                    oi.unitPriceCents
+                );
+
+            items.append(orderItem);
+        }
+
+        item["items"] = items;
+
+        result.append(item);
+    }
+
+    auto response =
+        drogon::HttpResponse::newHttpJsonResponse(
+            result
+        );
+
+    response->setStatusCode(
+        drogon::k200OK
+    );
+
+    callback(response);
+}

@@ -13,7 +13,7 @@ private:
 public:
     UserService();
 
-    bool registerUser(const User& user);
+    bool registerUser(User& user);
 
     std::optional<User> loginUser(
         const std::string& email,

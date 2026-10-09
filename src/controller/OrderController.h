@@ -28,6 +28,12 @@ public:
         drogon::Get
     );
 
+    ADD_METHOD_TO(
+        OrderController::getOrdersBySeller,
+        "/api/seller/orders/{1}",
+        drogon::Get
+    );
+
     METHOD_LIST_END
 
     void checkout(
@@ -47,4 +53,10 @@ public:
             const drogon::HttpResponsePtr&)>&& callback,
         long long buyerId,
         long long orderId);
+
+    void getOrdersBySeller(
+        const drogon::HttpRequestPtr& req,
+        std::function<void(
+            const drogon::HttpResponsePtr&)>&& callback,
+        long long sellerId);
 };
