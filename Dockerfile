@@ -14,7 +14,14 @@ RUN apt-get update && \
         tar \
         pkg-config \
         ca-certificates \
-        python3 && \
+        bison \
+        flex \
+        autoconf \
+        automake \
+        libtool \
+        python3 \
+        python3-setuptools \
+        python3-venv && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /opt
