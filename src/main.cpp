@@ -101,9 +101,6 @@ int main()
     dbClient["timeout"] = 10.0;
     dbClient["auto_batch"] = false;
 
-    // Neon PostgreSQL requires SSL.
-    dbClient["connect_options"]["sslmode"] = "require";
-
     config["db_clients"].append(dbClient);
 
     // ---------------------------------------------------------
