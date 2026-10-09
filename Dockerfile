@@ -1,6 +1,8 @@
 FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
+ENV VCPKG_MAX_CONCURRENCY=1
+ENV CMAKE_BUILD_PARALLEL_LEVEL=1
 
 RUN apt-get update && \
     apt-get install -y \
@@ -44,7 +46,7 @@ RUN cmake \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_TOOLCHAIN_FILE=/opt/vcpkg/scripts/buildsystems/vcpkg.cmake
 
-RUN cmake --build build --config Release
+RUN cmake --build build --config Release -j 1
 
 EXPOSE 10000
 
